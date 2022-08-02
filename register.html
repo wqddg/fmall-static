@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+	<head lang="en">
+		<meta charset="UTF-8">
+		<title>注册</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="format-detection" content="telephone=no">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+		<link rel="stylesheet" href="static/css/amazeui.css" />
+		<link href="static/css/dlstyle.css" rel="stylesheet" type="text/css">
+
+		<link rel="stylesheet" href="static/css/bootstrap.min.css" />
+	</head>
+
+	<body>
+	<div id="app">
+		<div class="login-boxtitle" style="height: 100px;">
+			<div class="logoBig">
+				<img src="static/images/logo.png" style="margin-left: 0px ; height: 100px;">
+			</div>
+		</div>
+
+		<div class="login-banner" style="background: rgb(142,213,21);">
+			<div class="login-main">
+				<div class="login-banner-bg"><span></span><img width="400"  src="static/images/act2.png" /></div>
+				<div class="login-box">
+
+					<h3 class="title">用户注册</h3>
+
+					<div :style="styles" class="clear">{{tips}}</div>
+
+					<div class="login-form" style="background: none;">
+						<form>
+							<div class="user-name">
+								<label for="user"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></label>
+								<input type="text" v-model="user.username" id="user" placeholder="邮箱/手机/用户名" @keyup="checkIndex">
+							</div>
+							<div class="user-pass" style="margin-top: 15px;">
+								<label for="password"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></label>
+								<input type="password"  v-model="user.password"  id="password" placeholder="请输入密码" @keyup="checkIndex">
+							</div>
+							<div class="user-pass" style="margin-top: 15px;">
+								<label for="password"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></label>
+								<input type="password" name=""   v-model="user.password_index" id="repassword" placeholder="请再次输入密码" @keyup="checkIndex">
+							</div>
+						</form>
+					</div>
+					<div class="login-links">
+						<br />
+					</div>
+					<div class="am-cf">
+						<input type="submit" @click="submit"  value="提交注册" class="am-btn am-btn-primary am-btn-sm">
+					</div>
+					<div class="partner">
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="footer ">
+			<div class="footer-hd ">
+
+			</div>
+			<div class="footer-bd ">
+				<p>
+					<a href="# ">联系我们</a>
+					<a href="# ">网站地图</a>
+				</p>
+			</div>
+		</div>
+	</div>
+	</body>
+	<script type="text/javascript" src="static/js/jquery-1.9.min.js"></script>
+	<script type="text/javascript" src="static/js/vue.js"></script>
+	<script type="text/javascript" src="static/js/axios.min.js"></script>
+	<script type="text/javascript" src="/static/js/wqddg_url.js"></script>
+<script type="text/javascript" >
+	// var baseUrl="http://192.168.80.179:8081/"
+	var vms=new Vue({
+		el:"#app",
+		data:{
+			user:{
+				username:"",
+				password:"",
+				password_index:""
+			},
+			tips:"",
+			styles:"",
+			isRight:true
+		},
+		methods:{
+			submit:function () {
+				if (vms.isRight){
+					// axios.post(baseUrl+"user/regist",vms.user).then(function (res) {
+					// 	if (res.data.code==1000){
+					//
+					// 	}else {
+					// 		vms.tips=res.data.msg
+					// 		vms.styles="color:red"
+					// 	}
+					// })
+					axios({
+						method:"post",
+						url:"http://localhost:8002/user/regis",
+						data: vms.user
+					}).then(function (res) {
+						if (res.data.code==10000){
+							vms.tips="恭喜注册成功"
+							vms.styles="color:green"
+							setTimeout(function () {
+								window.location.href="login.html"
+							},3000)
+						}else {
+							vms.tips=res.data.msg
+							vms.styles="color:red"
+						}
+					})
+				}else {
+					vms.tips="请确定注册信息是否正确"
+					vms.styles="color:red"
+				}
+			},
+			checkIndex:function () {
+				//开始调试用户名
+				if (vms.user.username==""){
+					vms.isRight=false
+					vms.tips="用户名未填写"
+					vms.styles="color:red"
+				}else if (vms.user.username.length<8||vms.user.username.length>20){
+					vms.isRight=false
+					vms.tips="用户名必须为8-20"
+					vms.styles="color:red"
+				}else {
+					//开始调试密码
+					if (vms.user.password==""){
+						vms.isRight=false
+						vms.tips="密码未填写"
+						vms.styles="color:red"
+					}else if (vms.user.password.length<5||vms.user.password.length>16){
+						vms.isRight=false
+						vms.tips="密码必须为5-16"
+						vms.styles="color:red"
+					}else {
+						//开始调试确定密码密码
+						if (vms.user.password_index==""){
+							vms.isRight=false
+							vms.tips="确定密码未填写"
+							vms.styles="color:red"
+						}else if (vms.user.password_index.length<5||vms.user.password_index.length>16){
+							vms.isRight=false
+							vms.tips="确定密码必须为5-16"
+							vms.styles="color:red"
+						}else if (vms.user.password!=vms.user.password_index){
+							vms.isRight=false
+							vms.tips="密码和确认密码不一致"
+							vms.styles="color:red"
+						}else {
+							vms.tips="没问题"
+							vms.isRight=true
+						}
+					}
+				}
+			}
+		}
+	})
+</script>
+</html>
